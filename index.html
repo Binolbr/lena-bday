@@ -349,6 +349,13 @@ function play() {
   setTimeout(() => { if (!playing) { musicBtn.classList.add('nudge'); musicBtn.textContent = '🔊 Тыкни — врубить Белочку'; } }, 2200);
 }
 function volume(v) { try { if (ytReady) yt.setVolume(v); } catch (e) {} }
+// start music on the very first real tap anywhere (browsers require a direct gesture)
+let firstTap = false;
+const kick = () => {
+  if (firstTap) return; firstTap = true; wantPlay = true; musicBtn.classList.add('show');
+  try { if (ytReady) { yt.unMute(); yt.setVolume(100); yt.playVideo(); } } catch (e) {}
+};
+['pointerdown', 'touchend', 'click'].forEach(ev => document.addEventListener(ev, kick, { capture: true }));
 musicBtn.addEventListener('click', () => {
   if (!ytReady) return;
   if (playing) yt.pauseVideo(); else { yt.unMute(); yt.playVideo(); }
